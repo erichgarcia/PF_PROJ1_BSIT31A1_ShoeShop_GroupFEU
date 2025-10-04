@@ -54,14 +54,14 @@ A **comprehensive shoe inventory management system** with:
 
 ## 👥 **TEAM STRUCTURE & ROLES**
 
-### **Form Groups of 4 Students**
+### **Current Team Assignment**
 
-| Student | Layer Assignment | Responsibilities | Branch Name |
-|---------|-----------------|------------------|-------------|
-| **Student A** | **Repository Layer** | Database, entities, data access | `dev-[firstname-lastname]` |
-| **Student B** | **Service Layer** | Business logic, DTOs, validation | `dev-[firstname-lastname]` |
-| **Student C** | **Web MVC Layer (UI/Design)** | Views, styling, user experience | `dev-[firstname-lastname]` |
-| **Student D** | **Web MVC Layer (Controllers)** | Controllers, integration, workflows | `dev-[firstname-lastname]` |
+| Developer | Layer Assignment | Responsibilities | Branch Name | Status |
+|-----------|-----------------|------------------|-------------|--------|
+| **Erich Garcia** | **Repository Layer** | Database, entities, data access | `dev-erich-garcia` | ✅ **COMPLETE** |
+| **Erich Garcia** | **Service Layer** | Business logic, DTOs, validation | `dev-erich-garcia` | ✅ **COMPLETE** |
+| **Student C** | **Web MVC Layer (UI/Design)** | Views, styling, user experience | `dev-[firstname-lastname]` | 🔄 **Pending** |
+| **Student D** | **Web MVC Layer (Controllers)** | Controllers, integration, workflows | `dev-[firstname-lastname]` | 🔄 **Pending** |
 
 ### **Repository Setup:**
 - **Repository Name**: `PF_PROJ1_BSIT_32xx_ShoeShop` (Example: `PF_PROJ1_BSIT_3201_ShoeShop`)
