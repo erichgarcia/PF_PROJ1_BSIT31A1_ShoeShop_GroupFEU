@@ -1,0 +1,145 @@
+@model ShoeShop.Service.DTOs.ShoeDto
+@{
+    ViewData["Title"] = "Shoe Details";
+    ViewData["ActivePage"] = "Inventory";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Shoe Details</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/Home/Dashboard">Home</a></li>
+                <li class="breadcrumb-item"><a href="/Inventory">Inventory</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        <a href="/Inventory/Edit/@Model.Id" class="btn btn-primary">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+        <a href="/Inventory" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-shoe-prints me-2"></i>@Model.Name</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">SKU</label>
+                            <p class="font-monospace">@Model.SKU</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Brand</label>
+                            <p>@Model.Brand</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            <p>@Model.Category</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Size</label>
+                            <p>@Model.Size</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Color</label>
+                            <p>@Model.Color</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Price</label>
+                            <p class="h5 text-success">₱@Model.Price.ToString("N2")</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Stock Quantity</label>
+                            @if (Model.StockQuantity == 0)
+                            {
+                                <p class="text-danger fw-bold">@Model.StockQuantity - Out of Stock</p>
+                            }
+                            else if (Model.StockQuantity <= 10)
+                            {
+                                <p class="text-warning fw-bold">@Model.StockQuantity - Low Stock</p>
+                            }
+                            else
+                            {
+                                <p class="text-success">@Model.StockQuantity - In Stock</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        <p>@Model.Description</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Stock Management -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-boxes me-2"></i>Stock Management</h6>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/Inventory/UpdateStock/@Model.Id">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Adjust Stock</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" value="@Model.StockQuantity" min="0" required>
+                        <div class="form-text">Current stock: @Model.StockQuantity units</div>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-sync-alt me-2"></i>Update Stock
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-chart-line me-2"></i>Quick Stats</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Total Value:</span>
+                    <strong>₱@((Model.Price * Model.StockQuantity).ToString("N2"))</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Unit Price:</span>
+                    <strong>₱@Model.Price.ToString("N2")</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Stock Status:</span>
+                    @if (Model.StockQuantity == 0)
+                    {
+                        <span class="badge badge-danger">Out of Stock</span>
+                    }
+                    else if (Model.StockQuantity <= 10)
+                    {
+                        <span class="badge badge-warning">Low Stock</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-success">In Stock</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

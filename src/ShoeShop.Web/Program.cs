@@ -7,9 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add Entity Framework
+// Add Entity Framework (using In-Memory database for testing)
 builder.Services.AddDbContext<ShoeShopDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseInMemoryDatabase("ShoeShopDB"));
 
 // Add Service Layer services (from ServiceConfiguration)
 builder.Services.AddServiceLayer();
@@ -39,5 +39,11 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+// Initialize database with seed data
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ShoeShopDbContext>();
+    context.Database.EnsureCreated();
+}
 
 app.Run();

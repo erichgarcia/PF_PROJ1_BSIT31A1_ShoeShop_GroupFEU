@@ -21,6 +21,9 @@ namespace ShoeShop.Repository.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Seed data for testing
+            SeedData(modelBuilder);
+
             // Configure Shoe entity
             modelBuilder.Entity<Shoe>(entity =>
             {
@@ -147,6 +150,88 @@ namespace ShoeShop.Repository.Data
                 entity.HasIndex(e => e.PullOutDate);
                 entity.HasIndex(e => e.RequestedBy);
             });
+        }
+
+        private void SeedData(ModelBuilder modelBuilder)
+        {
+            // Seed Shoes
+            modelBuilder.Entity<Shoe>().HasData(
+                new Shoe
+                {
+                    Id = 1,
+                    Name = "Air Force 1",
+                    Brand = "Nike",
+                    Category = "Lifestyle",
+                    Size = "8.5",
+                    Color = "White",
+                    Price = 5995.00m,
+                    StockQuantity = 45,
+                    SKU = "NK-AF1-001",
+                    Description = "Classic Nike Air Force 1 in white leather",
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                },
+                new Shoe
+                {
+                    Id = 2,
+                    Name = "Ultraboost 22",
+                    Brand = "Adidas",
+                    Category = "Running",
+                    Size = "9.0",
+                    Color = "Core Black",
+                    Price = 8995.00m,
+                    StockQuantity = 32,
+                    SKU = "AD-UB22-002",
+                    Description = "Adidas Ultraboost 22 with responsive cushioning",
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                },
+                new Shoe
+                {
+                    Id = 3,
+                    Name = "Jordan 1 Retro High",
+                    Brand = "Jordan",
+                    Category = "Basketball",
+                    Size = "10.0",
+                    Color = "Bred",
+                    Price = 8495.00m,
+                    StockQuantity = 8,
+                    SKU = "JD-1RH-003",
+                    Description = "Classic Jordan 1 in Bred colorway",
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                },
+                new Shoe
+                {
+                    Id = 4,
+                    Name = "Chuck Taylor All Star",
+                    Brand = "Converse",
+                    Category = "Lifestyle",
+                    Size = "7.5",
+                    Color = "Classic White",
+                    Price = 3495.00m,
+                    StockQuantity = 5,
+                    SKU = "CV-CT-004",
+                    Description = "Timeless Converse Chuck Taylor All Star",
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                },
+                new Shoe
+                {
+                    Id = 5,
+                    Name = "990v5",
+                    Brand = "New Balance",
+                    Category = "Running",
+                    Size = "9.5",
+                    Color = "Grey",
+                    Price = 9495.00m,
+                    StockQuantity = 0,
+                    SKU = "NB-990-005",
+                    Description = "New Balance 990v5 premium running shoe",
+                    IsActive = true,
+                    CreatedDate = DateTime.Now
+                }
+            );
         }
     }
 }
