@@ -7,13 +7,14 @@ namespace ShoeShop.Services
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddShoeShopServices(this IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services)
         {
             // AutoMapper
             services.AddAutoMapper(typeof(MappingProfile));
 
             // Service registrations
             services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<ISimpleInventoryService, SimpleInventoryService>();
             // TODO: Complete other service implementations
             // services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
             // services.AddScoped<IPullOutService, PullOutService>();

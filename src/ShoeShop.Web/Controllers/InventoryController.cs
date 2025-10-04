@@ -1,17 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
-using ShoeShop.Service.Interfaces;
-using ShoeShop.Service.DTOs;
-using ShoeShop.Service.Exceptions;
+using ShoeShop.Services.Interfaces;
+using ShoeShop.Services.Exceptions;
+using ShoeShop.Services.DTOs.Simple;
 using ShoeShop.Web.Models;
 
 namespace ShoeShop.Web.Controllers
 {
     public class InventoryController : Controller
     {
-        private readonly IInventoryService _inventoryService;
+        private readonly ISimpleInventoryService _inventoryService;
         private readonly ILogger<InventoryController> _logger;
 
-        public InventoryController(IInventoryService inventoryService, ILogger<InventoryController> logger)
+        public InventoryController(ISimpleInventoryService inventoryService, ILogger<InventoryController> logger)
         {
             _inventoryService = inventoryService;
             _logger = logger;
@@ -127,7 +127,7 @@ namespace ShoeShop.Web.Controllers
         // GET: Inventory/Create
         public IActionResult Create()
         {
-            var model = new ShoeCreateDto();
+            var model = new SimpleShoeCreateDto();
             PopulateDropdowns();
             return View(model);
         }
@@ -135,7 +135,7 @@ namespace ShoeShop.Web.Controllers
         // POST: Inventory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ShoeCreateDto model)
+        public async Task<IActionResult> Create(SimpleShoeCreateDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -148,18 +148,6 @@ namespace ShoeShop.Web.Controllers
                 var createdShoe = await _inventoryService.AddShoeAsync(model);
                 TempData["SuccessMessage"] = $"Shoe '{createdShoe.Name}' has been added successfully.";
                 return RedirectToAction(nameof(Details), new { id = createdShoe.Id });
-            }
-            catch (DuplicateSkuException ex)
-            {
-                ModelState.AddModelError("SKU", ex.Message);
-                PopulateDropdowns();
-                return View(model);
-            }
-            catch (InvalidPriceException ex)
-            {
-                ModelState.AddModelError("Price", ex.Message);
-                PopulateDropdowns();
-                return View(model);
             }
             catch (Exception ex)
             {
@@ -182,7 +170,7 @@ namespace ShoeShop.Web.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                var model = new ShoeUpdateDto
+                var model = new SimpleShoeUpdateDto
                 {
                     Id = shoe.Id,
                     Name = shoe.Name,
@@ -190,6 +178,7 @@ namespace ShoeShop.Web.Controllers
                     Category = shoe.Category,
                     Size = shoe.Size,
                     Color = shoe.Color,
+                    SKU = shoe.SKU,
                     Price = shoe.Price,
                     StockQuantity = shoe.StockQuantity,
                     Description = shoe.Description
@@ -209,7 +198,7 @@ namespace ShoeShop.Web.Controllers
         // POST: Inventory/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ShoeUpdateDto model)
+        public async Task<IActionResult> Edit(int id, SimpleShoeUpdateDto model)
         {
             if (id != model.Id)
             {
@@ -228,17 +217,6 @@ namespace ShoeShop.Web.Controllers
                 var updatedShoe = await _inventoryService.UpdateShoeAsync(model);
                 TempData["SuccessMessage"] = $"Shoe '{updatedShoe.Name}' has been updated successfully.";
                 return RedirectToAction(nameof(Details), new { id = updatedShoe.Id });
-            }
-            catch (ShoeNotFoundException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction(nameof(Index));
-            }
-            catch (InvalidPriceException ex)
-            {
-                ModelState.AddModelError("Price", ex.Message);
-                PopulateDropdowns();
-                return View(model);
             }
             catch (Exception ex)
             {
@@ -282,11 +260,6 @@ namespace ShoeShop.Web.Controllers
                 TempData["SuccessMessage"] = "Shoe has been deleted successfully.";
                 return RedirectToAction(nameof(Index));
             }
-            catch (ShoeNotFoundException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction(nameof(Index));
-            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error deleting shoe with ID: {Id}", id);
@@ -304,16 +277,6 @@ namespace ShoeShop.Web.Controllers
             {
                 await _inventoryService.UpdateStockAsync(id, quantity);
                 TempData["SuccessMessage"] = "Stock updated successfully.";
-                return RedirectToAction(nameof(Details), new { id });
-            }
-            catch (ShoeNotFoundException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction(nameof(Index));
-            }
-            catch (InsufficientStockException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
                 return RedirectToAction(nameof(Details), new { id });
             }
             catch (Exception ex)

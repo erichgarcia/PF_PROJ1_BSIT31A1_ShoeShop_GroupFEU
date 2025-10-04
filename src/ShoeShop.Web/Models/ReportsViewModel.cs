@@ -1,4 +1,4 @@
-using ShoeShop.Service.DTOs;
+using ShoeShop.Services.DTOs.Simple;
 
 namespace ShoeShop.Web.Models
 {
@@ -55,8 +55,8 @@ namespace ShoeShop.Web.Models
 
     public class ValueAnalysisViewModel
     {
-        public List<ShoeDto> TopValueProducts { get; set; } = new List<ShoeDto>();
-        public List<ShoeDto> HighestPricedProducts { get; set; } = new List<ShoeDto>();
-        public List<ShoeDto> MostStockedProducts { get; set; } = new List<ShoeDto>();
+        public List<SimpleShoeDto> TopValueProducts { get; set; } = new List<SimpleShoeDto>();
+        public List<SimpleShoeDto> HighestPricedProducts { get; set; } = new List<SimpleShoeDto>();
+        public List<SimpleShoeDto> MostStockedProducts { get; set; } = new List<SimpleShoeDto>();
     }
 }

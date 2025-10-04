@@ -1,10 +1,10 @@
-using ShoeShop.Service.DTOs;
+using ShoeShop.Services.DTOs.Simple;
 
 namespace ShoeShop.Web.Models
 {
     public class InventoryIndexViewModel
     {
-        public IEnumerable<ShoeDto> Shoes { get; set; } = new List<ShoeDto>();
+        public IEnumerable<SimpleShoeDto> Shoes { get; set; } = new List<SimpleShoeDto>();
         
         // Pagination
         public int CurrentPage { get; set; } = 1;

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShoeShop.Repository.Data;
-using ShoeShop.Service.Configuration;
+using ShoeShop.Services;
+using ShoeShop.Services.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,11 +12,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ShoeShopDbContext>(options =>
     options.UseInMemoryDatabase("ShoeShopDB"));
 
-// Add Service Layer services (from ServiceConfiguration)
-builder.Services.AddServiceLayer();
+// Add Service Layer services
+builder.Services.AddServices();
 
 // Add AutoMapper
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

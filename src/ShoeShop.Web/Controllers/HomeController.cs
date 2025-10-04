@@ -1,17 +1,17 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using ShoeShop.Web.Models;
-using ShoeShop.Service.Interfaces;
-using ShoeShop.Service.DTOs;
+using ShoeShop.Services.Interfaces;
+using ShoeShop.Services.DTOs.Simple;
 
 namespace ShoeShop.Web.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly IInventoryService _inventoryService;
+    private readonly ISimpleInventoryService _inventoryService;
     private readonly ILogger<HomeController> _logger;
 
-    public HomeController(IInventoryService inventoryService, ILogger<HomeController> logger)
+    public HomeController(ISimpleInventoryService inventoryService, ILogger<HomeController> logger)
     {
         _inventoryService = inventoryService;
         _logger = logger;

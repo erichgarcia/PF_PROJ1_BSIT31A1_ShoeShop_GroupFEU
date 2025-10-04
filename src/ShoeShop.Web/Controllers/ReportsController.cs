@@ -1,15 +1,16 @@
 using Microsoft.AspNetCore.Mvc;
-using ShoeShop.Service.Interfaces;
+using ShoeShop.Services.Interfaces;
+using ShoeShop.Services.DTOs.Simple;
 using ShoeShop.Web.Models;
 
 namespace ShoeShop.Web.Controllers
 {
     public class ReportsController : Controller
     {
-        private readonly IInventoryService _inventoryService;
+        private readonly ISimpleInventoryService _inventoryService;
         private readonly ILogger<ReportsController> _logger;
 
-        public ReportsController(IInventoryService inventoryService, ILogger<ReportsController> logger)
+        public ReportsController(ISimpleInventoryService inventoryService, ILogger<ReportsController> logger)
         {
             _inventoryService = inventoryService;
             _logger = logger;
@@ -163,7 +164,7 @@ namespace ShoeShop.Web.Controllers
             }
         }
 
-        private string GenerateCsvReport(IEnumerable<ShoeShop.Service.DTOs.ShoeDto> shoes)
+        private string GenerateCsvReport(IEnumerable<SimpleShoeDto> shoes)
         {
             var csv = new System.Text.StringBuilder();
             csv.AppendLine("ID,Name,Brand,Category,Size,Color,Price,Stock Quantity,Description,SKU");

@@ -16,6 +16,20 @@ namespace ShoeShop.Repository.Models
         [StringLength(50)]
         public string Brand { get; set; } = string.Empty;
 
+        [StringLength(50)]
+        public string Category { get; set; } = string.Empty;
+
+        [StringLength(10)]
+        public string Size { get; set; } = string.Empty;
+
+        [StringLength(50)]
+        public string Color { get; set; } = string.Empty;
+
+        [StringLength(50)]
+        public string SKU { get; set; } = string.Empty;
+
+        public int StockQuantity { get; set; } = 0;
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal Cost { get; set; }
 
