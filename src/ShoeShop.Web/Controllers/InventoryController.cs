@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShoeShop.Services.Interfaces;
 using ShoeShop.Services.Exceptions;
@@ -6,6 +7,7 @@ using ShoeShop.Web.Models;
 
 namespace ShoeShop.Web.Controllers
 {
+    [Authorize]
     public class InventoryController : Controller
     {
         private readonly ISimpleInventoryService _inventoryService;
@@ -125,6 +127,7 @@ namespace ShoeShop.Web.Controllers
         }
 
         // GET: Inventory/Create
+        [Authorize(Roles = "Administrator,Manager")]
         public IActionResult Create()
         {
             var model = new SimpleShoeCreateDto();
@@ -135,6 +138,7 @@ namespace ShoeShop.Web.Controllers
         // POST: Inventory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Manager")]
         public async Task<IActionResult> Create(SimpleShoeCreateDto model)
         {
             if (!ModelState.IsValid)
@@ -159,6 +163,7 @@ namespace ShoeShop.Web.Controllers
         }
 
         // GET: Inventory/Edit/5
+        [Authorize(Roles = "Administrator,Manager")]
         public async Task<IActionResult> Edit(int id)
         {
             try
@@ -198,6 +203,7 @@ namespace ShoeShop.Web.Controllers
         // POST: Inventory/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator,Manager")]
         public async Task<IActionResult> Edit(int id, SimpleShoeUpdateDto model)
         {
             if (id != model.Id)
@@ -228,6 +234,7 @@ namespace ShoeShop.Web.Controllers
         }
 
         // GET: Inventory/Delete/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -252,6 +259,7 @@ namespace ShoeShop.Web.Controllers
         // POST: Inventory/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShoeShop.Services.Interfaces;
 using ShoeShop.Services.DTOs.Simple;
@@ -5,6 +6,7 @@ using ShoeShop.Web.Models;
 
 namespace ShoeShop.Web.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class ReportsController : Controller
     {
         private readonly ISimpleInventoryService _inventoryService;
