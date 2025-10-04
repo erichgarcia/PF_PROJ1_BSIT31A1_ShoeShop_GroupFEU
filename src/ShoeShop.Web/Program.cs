@@ -1,7 +1,21 @@
+using Microsoft.EntityFrameworkCore;
+using ShoeShop.Repository.Data;
+using ShoeShop.Service.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add Entity Framework
+builder.Services.AddDbContext<ShoeShopDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add Service Layer services (from ServiceConfiguration)
+builder.Services.AddServiceLayer();
+
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 
