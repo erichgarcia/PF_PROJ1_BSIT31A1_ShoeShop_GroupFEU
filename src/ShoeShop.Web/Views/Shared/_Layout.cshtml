@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ShoeShop Admin</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="~/css/admin-theme.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <nav class="sidebar bg-dark">
+            <div class="sidebar-header p-3">
+                <h4 class="text-white"><i class="fas fa-shoe-prints me-2"></i>ShoeShop</h4>
+                <p class="text-muted small mb-0">Inventory Management</p>
+            </div>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/">
+                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/Inventory">
+                            <i class="fas fa-boxes me-2"></i>Inventory
+                        </a>
+                    </li>
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/PurchaseOrder">
+                                <i class="fas fa-shopping-cart me-2"></i>Purchase Orders
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/PullOut">
+                                <i class="fas fa-sign-out-alt me-2"></i>Pull-Out Requests
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("Administrator"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/Reports">
+                                <i class="fas fa-chart-bar me-2"></i>Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/Account/Users">
+                                <i class="fas fa-users me-2"></i>User Management
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="/Account/Login">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                    </li>
+                </ul>
+            }
+        </nav>
+        
+        <!-- Main Content -->
+        <div class="main-content flex-grow-1">
+            <header class="header bg-white shadow-sm p-3 mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-0 small">
+                                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                                <li class="breadcrumb-item active">@ViewData["Title"]</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="user-info d-flex align-items-center">
+                            <div class="me-3 text-end">
+                                <div class="fw-medium">@(User.Identity.Name ?? "User")</div>
+                                <small class="text-muted">
+                                    @if (User.IsInRole("Administrator"))
+                                    {
+                                        <span class="badge bg-danger">Administrator</span>
+                                    }
+                                    else if (User.IsInRole("Manager"))
+                                    {
+                                        <span class="badge bg-warning text-dark">Manager</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">Employee</span>
+                                    }
+                                </small>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user-circle me-1"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><h6 class="dropdown-header">@User.Identity.Name</h6></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/Account/Profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                    @if (User.IsInRole("Administrator"))
+                                    {
+                                        <li><a class="dropdown-item" href="/Account/Users"><i class="fas fa-users me-2"></i>Manage Users</a></li>
+                                        <li><a class="dropdown-item" href="/Account/Register"><i class="fas fa-user-plus me-2"></i>Add User</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="dropdown-item p-0">
+                                            <button type="submit" class="btn btn-link dropdown-item text-start w-100 text-decoration-none">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="user-info">
+                            <a href="/Account/Login" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </a>
+                        </div>
+                    }
+                </div>
+            </header>
+            <main class="container-fluid">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

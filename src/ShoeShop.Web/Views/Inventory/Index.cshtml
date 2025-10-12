@@ -1,0 +1,387 @@
+@model ShoeShop.Web.Models.InventoryIndexViewModel
+
+@{
+    ViewData["Title"] = "Inventory Management";
+    ViewData["ActivePage"] = "Inventory";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 text-gray-800">Inventory Management</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/Home/Dashboard">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Inventory</li>
+            </ol>
+        </nav>
+    </div>
+    <div>
+        @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+        {
+            <a asp-action="Create" class="btn btn-primary me-2">
+                <i class="fas fa-plus"></i> Add New Shoe
+            </a>
+        }
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                Actions
+            </button>
+            <ul class="dropdown-menu">
+                @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+                {
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-file-import me-2"></i>Import CSV</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-file-export me-2"></i>Export CSV</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                }
+                <li><a class="dropdown-item" href="/Inventory/LowStock"><i class="fas fa-search me-2"></i>Low Stock Report</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Filters and Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="searchQuery" class="form-label">Search</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="searchQuery" name="searchQuery" value="@Model.SearchQuery" placeholder="Search by name, brand, or SKU...">
+                    <button class="btn btn-outline-secondary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label for="brandFilter" class="form-label">Brand</label>
+                <select class="form-select" id="brandFilter" name="brandFilter">
+                    <option value="">All Brands</option>
+                    <option value="Nike">Nike</option>
+                    <option value="Adidas">Adidas</option>
+                    <option value="Puma">Puma</option>
+                    <option value="Converse">Converse</option>
+                    <option value="Vans">Vans</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="New Balance">New Balance</option>
+                    <option value="Reebok">Reebok</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="categoryFilter" class="form-label">Category</label>
+                <select class="form-select" id="categoryFilter" name="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Running">Running</option>
+                    <option value="Basketball">Basketball</option>
+                    <option value="Casual">Casual</option>
+                    <option value="Lifestyle">Lifestyle</option>
+                    <option value="Training">Training</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="stockFilter" class="form-label">Stock Status</label>
+                <select class="form-select" id="stockFilter" name="stockFilter">
+                    <option value="">All Stock</option>
+                    <option value="InStock">In Stock</option>
+                    <option value="LowStock">Low Stock</option>
+                    <option value="OutOfStock">Out of Stock</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="sortBy" class="form-label">Sort By</label>
+                <select class="form-select" id="sortBy" name="sortBy">
+                    <option value="name">Name</option>
+                    <option value="price">Price</option>
+                    <option value="stock">Stock</option>
+                    <option value="brand">Brand</option>
+                    <option value="created">Date Added</option>
+                </select>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Inventory Summary Cards -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-left-primary h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Items</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalShoes</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shoe-prints fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-left-success h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Value</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalValue.ToString("C")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-peso-sign fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-left-warning h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Low Stock Items</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.LowStockCount</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-triangle fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card border-left-danger h-100">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Out of Stock</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.OutOfStockCount</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-times-circle fa-2x text-danger"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inventory Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 font-weight-bold text-primary">Shoe Inventory</h6>
+        <div class="btn-group btn-group-sm" role="group">
+            <input type="radio" class="btn-check" name="viewMode" id="cardView" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="cardView"><i class="fas fa-th"></i></label>
+            
+            <input type="radio" class="btn-check" name="viewMode" id="tableView" autocomplete="off" checked>
+            <label class="btn btn-outline-secondary" for="tableView"><i class="fas fa-list"></i></label>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="selectAll" class="form-check-input">
+                        </th>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Size</th>
+                        <th>Stock</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Shoes != null && Model.Shoes.Any())
+                    {
+                        @foreach (var shoe in Model.Shoes)
+                        {
+                            <tr>
+                                <td>
+                                    @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+                                    {
+                                        <input type="checkbox" class="form-check-input" name="selectedShoes" value="@shoe.Id">
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                            <i class="fas fa-shoe-prints text-muted"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@shoe.Name</div>
+                                            <small class="text-muted">@shoe.Color</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="font-monospace">@shoe.SKU</span></td>
+                                <td>@shoe.Brand</td>
+                                <td>@shoe.Category</td>
+                                <td>@shoe.Size</td>
+                                <td>
+                                    @{
+                                        var stockClass = shoe.StockQuantity == 0 ? "text-danger" : 
+                                                        shoe.StockQuantity <= 10 ? "text-warning" : "text-success";
+                                    }
+                                    <span class="@stockClass fw-bold">@shoe.StockQuantity</span>
+                                </td>
+                                <td class="fw-bold">@shoe.Price.ToString("C")</td>
+                                <td>
+                                    @if (shoe.StockQuantity == 0)
+                                    {
+                                        <span class="badge bg-danger">Out of Stock</span>
+                                    }
+                                    else if (shoe.StockQuantity <= 10)
+                                    {
+                                        <span class="badge bg-warning text-dark">Low Stock</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">In Stock</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a asp-action="Details" asp-route-id="@shoe.Id" class="btn btn-outline-info" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@shoe.Id" class="btn btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        }
+                                        @if (User.IsInRole("Administrator"))
+                                        {
+                                            <button type="button" class="btn btn-outline-danger" title="Delete" onclick="confirmDelete(@shoe.Id, '@shoe.Name')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="10" class="text-center py-5">
+                                <i class="fas fa-boxes fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No shoes found</h5>
+                                <p class="text-muted">Try adjusting your search criteria or add some shoes to get started.</p>
+                                @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+                                {
+                                    <a asp-action="Create" class="btn btn-primary">
+                                        <i class="fas fa-plus me-2"></i>Add First Shoe
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                @if (Model.TotalItems > 0)
+                {
+                    var startIndex = (Model.CurrentPage - 1) * Model.PageSize + 1;
+                    var endIndex = Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalItems);
+                    <span>Showing @startIndex to @endIndex of @Model.TotalItems entries</span>
+                }
+                else
+                {
+                    <span>No entries found</span>
+                }
+            </div>
+            @if (Model.TotalPages > 1)
+            {
+                <nav aria-label="Inventory pagination">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage - 1, searchQuery = Model.SearchQuery, brandFilter = Model.BrandFilter, categoryFilter = Model.CategoryFilter, stockFilter = Model.StockFilter, sortBy = Model.SortBy })">Previous</a>
+                        </li>
+                        @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, searchQuery = Model.SearchQuery, brandFilter = Model.BrandFilter, categoryFilter = Model.CategoryFilter, stockFilter = Model.StockFilter, sortBy = Model.SortBy })">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.CurrentPage + 1, searchQuery = Model.SearchQuery, brandFilter = Model.BrandFilter, categoryFilter = Model.CategoryFilter, stockFilter = Model.StockFilter, sortBy = Model.SortBy })">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the shoe <strong id="deleteShoeNameModal"></strong> from the inventory?</p>
+                <p class="text-danger"><small>This action cannot be undone.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete" method="post" class="d-inline">
+                    <input type="hidden" id="deleteShoeIdModal" name="id" />
+                    <button type="submit" class="btn btn-danger">Delete Shoe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(id, name) {
+        document.getElementById('deleteShoeIdModal').value = id;
+        document.getElementById('deleteShoeNameModal').innerText = name;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+    
+    // Select all functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectAllCheckbox = document.getElementById('selectAll');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                var checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = this.checked;
+                }.bind(this));
+            });
+        }
+    });
+</script>
